@@ -1,0 +1,90 @@
+site_name: Opinionated FastAPI
+site_url: https://opinionated-fastapi.github.com/
+repo_url: https://github.com/opinionated-code/opinionated-fastapi/
+edit_uri: https://github.com/opinionated-code/opinionated-fastapi/edit/main/docs
+repo_name: opinionated-fastapi
+nav:
+  - Overview:
+    - Home: index.md
+    - Release Notes: release-notes.md
+    - Contributing: contributing.md
+    - License: license.md
+  - Tutorial:
+    - Getting Started: getting-started.md
+  - Reference:
+    - Command Line: fastapi-admin.md
+    - API Reference: opinionated-fastapi.md
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+    logo: material/comment-text-multiple-outline
+  favicon: img/favicon.ico
+  palette:
+    - scheme: default
+      primary: teal
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+  features:
+    - header.autohide
+    - navigation.sections
+    - navigation.top
+    - navigation.instant
+    - navigation.tabs
+    - toc.integrate
+copyright: Copyright &copy; 2021 Daniel Sloan, Lucid Horizons Pty Ltd
+extra:
+  manifest: manifest.webmanifest
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/opinionated-code
+      name: Opinionated Code on GitHub
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/OpinionatedCode
+      name: Opinionated Code on Twitter
+  version:
+    provider: mike
+markdown_extensions:
+- mkdocs-typer
+- admonition
+- abbr
+- def_list
+- meta
+- pymdownx.tasklist:
+    custom_checkbox: true
+- pymdownx.superfences
+- pymdownx.details
+- pymdownx.snippets
+- pymdownx.tabbed
+- pymdownx.emoji:
+    emoji_index: !!python/name:materialx.emoji.twemoji
+    emoji_generator: !!python/name:materialx.emoji.to_svg
+plugins:
+- git-revision-date-localized:
+    type: date
+    fallback_to_build_date: true
+    enable_creation_date: true
+- search
+- autorefs
+- redirects:
+    redirect_maps:
+- mkdocstrings:
+    default_handler: python
+    handlers:
+      python:
+        selection:
+          members: true
+        setup_commands:
+          - from opinionated.fastapi.bootstrap import setup
+          - setup()
+        rendering:
+          show_root_heading: true
+          show_source: false
+    watch:
+      - opinionated/

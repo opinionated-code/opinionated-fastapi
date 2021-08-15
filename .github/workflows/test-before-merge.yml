@@ -1,0 +1,44 @@
+name: Test Before Merge
+on:
+  pull_request:
+    types: [ opened, synchronize ]
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Set up Poetry
+        uses: abatilo/actions-poetry@v2.1.0
+        with:
+          poetry-version: 1.1.6
+      - name: Get cache dir
+        id: poetry-cache
+        run: |
+          python -c "print('::set-output name=dir::', end='')"
+          poetry config cache-dir
+      - name: Cache Poetry Virtualenv
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: ${{ steps.poetry-cache.outputs.dir }}
+          key: python-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}-test
+      - name: Install dependencies
+        run: poetry install
+      # fixme: consider adding nitpick and a style guide to check that all project requirements are met
+      - name: Run style check
+        run: black --check opinionated/ tests/
+      - name: Run type checks
+        run: mypy opinionated
+      - name: Run unit tests
+        run: pytest tests --cov=fastapi --cov=tests --cov=docs --cov-report=term-missing:skip-covered --cov-report=xml
+      - name: Upload coverage
+        uses: codecov/codecov-action@v1

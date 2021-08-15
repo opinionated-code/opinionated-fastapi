@@ -1,0 +1,34 @@
+name: publish-package
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Set up Poetry
+        uses: abatilo/actions-poetry@v2.1.0
+        with:
+          poetry-version: 1.1.6
+      - name: Get cache dir
+        id: poetry-cache
+        run: |
+          python -c "print('::set-output name=dir::', end='')"
+          poetry config cache-dir
+      - name: Cache Poetry Virtualenv
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: ${{ steps.poetry-cache.outputs.dir }}
+          key: python-${{ runner.os }}-${{ hashFiles('poetry.lock') }}-build
+      - name: Install dependencies
+        run: poetry install
+      - name: Build package
+        run: poetry build
+      - name: Publish package
+        run: poetry publish
