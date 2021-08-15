@@ -1,0 +1,39 @@
+name: publish-docs
+on:
+  # Run on pushes that change docs (which updates 'next' docs),
+  #  and on releases being published (which updates/creates docs for the release)
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+  release:
+    types: [ published ]
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+       - uses: actions/checkout@v2
+       - uses: actions/setup-python@v2
+         with:
+           python-version: 3.9
+       - name: Set up Poetry
+         uses: abatilo/actions-poetry@v2.1.0
+         with:
+           poetry-version: 1.1.6
+       - name: Get cache dir
+         id: poetry-cache
+         run: |
+           python -c "print('::set-output name=dir::', end='')"
+           poetry config cache-dir
+       - name: Cache Poetry Virtualenv
+         uses: actions/cache@v2
+         id: cache
+         with:
+           path: ${{ steps.poetry-cache.outputs.dir }}
+           key: python-${{ runner.os }}-${{ hashFiles('poetry.lock') }}-build
+       - name: Install dependencies
+         run: poetry install
+       - name: Publish documentation
+         run: mkdocs gh-deploy --force
