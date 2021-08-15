@@ -1,4 +1,7 @@
+.idea/
 site/
 *.sqlite
 .cache/
-
+__pycache__/
+*.pyc
+*.pyo
